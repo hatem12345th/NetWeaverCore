@@ -1,27 +1,19 @@
 import express from 'express';
-import jsonRoutes from './routes/jsonRoutes.js';
-import { createRequire } from 'module';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+import gns3Routes from './routes/gns3Routes.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-const require = createRequire(import.meta.url);
 const app = express();
 
 // Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+
 
 // Middleware
 app.use(express.json());
 
-// Routes
-app.use('/api', jsonRoutes);
+app.use('/api', gns3Routes);
+app.get('/', (req, res) => {
+  res.send('Hello from local network!');
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

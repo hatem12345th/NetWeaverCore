@@ -1,18 +1,9 @@
 #!/usr/bin/env node
 import net from 'net';
+import { Command } from '../../constants/ospf.topo.js';
 
 const HOST = 'localhost';
-const PORT = 5000; // <-- change this to your PC’s console port
 
-// Define any VPCS commands you need here:
-const CONFIG_COMMANDS = [
-  // Set IP, subnet mask, and gateway
-  { cmd: 'ip 192.168.1.2 255.255.255.0 192.168.1.1', prompt: />/ },
-  // (Optional) test connectivity
-  { cmd: 'ping 192.168.1.1', prompt: />/ },
-  // (Optional) show your IP settings
-  { cmd: 'show', prompt: />/ }
-];
 
 function sleep(ms) {
   return new Promise(res => setTimeout(res, ms));
@@ -48,7 +39,7 @@ async function sendCommand(socket, cmd, prompt) {
   return out;
 }
 
-async function main() {
+async function main(PORT,CONFIG_COMMANDS) {
   console.log('📡 Connecting to VPCS…');
   const socket = new net.Socket();
 
@@ -88,4 +79,9 @@ async function main() {
   socket.on('close', () => console.log('🔌 Disconnected from VPCS'));
 }
 
-main();
+
+(async () => {
+  for (const device of Command.slice(3, 6)) {
+    await main(device.port, device.commands);
+  }
+})();

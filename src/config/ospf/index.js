@@ -1,23 +1,10 @@
 #!/usr/bin/env node
 import net from 'net';
+import { Command } from '../../constants/ospf.topo.js';
 
 const HOST = 'localhost';
-const PORT = 5003;
 const ENABLE_PASSWORD = 'cisco';
 
-const CONFIG_COMMANDS = [
-  { cmd: 'configure terminal', prompt: '(config)#' },
-  { cmd: 'interface FastEthernet0/0', prompt: '(config-if)#' },
-  { cmd: 'ip address 10.0.0.2 255.255.255.252', prompt: '(config-if)#' },
-  { cmd: 'no shutdown', prompt: '(config-if)#' },
-  { cmd: 'exit', prompt: '(config)#' },
-  { cmd: 'router ospf 1', prompt: '(config-router)#' },
-  { cmd: 'network 10.0.0.0 0.0.0.3 area 0', prompt: '(config-router)#' },
-  { cmd: 'end', prompt: '#' },
-  { cmd: 'write memory', prompt: '#' },
-  { cmd: 'show ip interface brief', prompt: '#' },
-  { cmd: 'show ip ospf neighbor', prompt: '#' }
-];
 
 
 function sleep(ms) {
@@ -59,7 +46,9 @@ async function sendCommand(socket, cmd, prompt = '#') {
   return output;
 }
 
-async function main() {
+async function main(PORT,CONFIG_COMMANDS) {
+
+  
   console.log("📡 Starting GNS3 router configuration...");
   const socket = new net.Socket();
 
@@ -119,4 +108,53 @@ async function main() {
   });
 }
 
-main();
+
+
+(async () => {
+  for (const device of Command.slice(0, 3)) {
+    await main(device.port, device.commands);
+  }
+})();
+
+
+
+
+
+
+
+
+/*
+  const  = [
+  { cmd: 'configure terminal', prompt: '(config)#' },
+
+  // Interface configuration (example for Fa0/0)
+  { cmd: 'interface FastEthernet0/0', prompt: '(config-if)#' },
+  { cmd: 'ip address 10.0.0.1 255.255.255.252', prompt: '(config-if)#' },
+  { cmd: 'no shutdown', prompt: '(config-if)#' },
+  { cmd: 'exit', prompt: '(config)#' },
+
+  // OSPF configuration
+  { cmd: 'router ospf 1', prompt: '(config-router)#' },
+  { cmd: 'network 10.0.0.0 0.0.0.3 area 0', prompt: '(config-router)#' },
+
+  // Loopback (optional, good for router ID)
+  { cmd: 'exit', prompt: '(config)#' },
+  { cmd: 'interface Loopback0', prompt: '(config-if)#' },
+  { cmd: 'ip address 1.1.1.1 255.255.255.255', prompt: '(config-if)#' },
+  { cmd: 'exit', prompt: '(config)#' },
+
+  // Add loopback to OSPF
+  { cmd: 'router ospf 1', prompt: '(config-router)#' },
+  { cmd: 'network 1.1.1.1 0.0.0.0 area 0', prompt: '(config-router)#' },
+
+  // Exit and save
+  { cmd: 'end', prompt: '#' },
+  { cmd: 'write memory', prompt: '#' },
+
+  // Verification
+  { cmd: 'show ip interface brief', prompt: '#' },
+  { cmd: 'show ip ospf neighbor', prompt: '#' },
+  { cmd: 'show ip route ospf', prompt: '#' }
+];
+
+*/
